@@ -1,5 +1,5 @@
-# Generated Prometheus configuration
-prometheus/prometheus.yml
+# Generated Prometheus configuration (ignored to allow custom configs)
+# prometheus/prometheus.yml
 
 # Grafana data
 grafana/data/
