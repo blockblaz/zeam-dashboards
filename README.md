@@ -23,7 +23,7 @@ A basic Prometheus configuration is included in `prometheus/prometheus.yml` that
 **Option A: Use the included configuration (Recommended for quick start)**
 The repository includes a basic `prometheus/prometheus.yml` that will start monitoring:
 - Prometheus itself (localhost:9090)
-- A Zeam node running on the host (host.docker.internal:9667 or localhost:8080 using [lean-quickstart](https://github.com/blockblaz/lean-quickstart))
+- A Zeam node running on the host (host.docker.internal:9667 or localhost:8081 using [lean-quickstart](https://github.com/blockblaz/lean-quickstart))
 - Node exporter if available (host.docker.internal:9100)
 
 **Option B: Generate custom configuration (Advanced users)**
@@ -107,7 +107,7 @@ The repository includes a basic `prometheus/prometheus.yml` configuration that w
 
 **Basic Configuration Includes:**
 - Prometheus self-monitoring (localhost:9090)
-- Zeam node monitoring (localhost:8080)
+- Zeam node monitoring (localhost:8081)
 - Node exporter monitoring (host.docker.internal:9100)
 
 **Customizing the Configuration:**
@@ -144,7 +144,7 @@ Dashboards are stored in `grafana/dashboards/` and can be:
    - Verify Zeam node is running with `--metricsPort` flag
    - Check firewall settings
    - Ensure Prometheus config targets match Zeam metrics port
-   - If your Zeam node is not on the default port 8080, edit `prometheus/prometheus.yml` and update the target
+   - If your Zeam node is not on the default port 8081, edit `prometheus/prometheus.yml` and update the target
 
 2. **Grafana can't connect to Prometheus**:
    - Verify Prometheus is running: `docker-compose ps`
