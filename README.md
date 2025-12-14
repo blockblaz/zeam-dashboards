@@ -74,14 +74,15 @@ The fork choice tree dashboard (`grafana/dashboards/forkchoice-graph.json`) prov
 
 - **Interactive Node Graph**: Visual representation of the fork choice tree showing blocks and their relationships
 - **Color-Coded Arc Borders**:
-  - 🟣 **Purple**: Finalized blocks (immutable)
-  - 🔵 **Blue**: Justified blocks (2/3 supermajority)
+  - 🟣 **Purple**: Finalized blocks (immutable canonical chain)
+  - 🔵 **Blue**: Justified blocks (2/3 supermajority checkpoint)
   - 🟠 **Orange**: Current chain head
   - 🟢 **Green**: Timely blocks (normal blocks)
+  - ⚫ **Gray**: Orphaned blocks (historical forks that diverged before finalization)
 - **Arc Border Completeness**: Represents validator weight (larger border = more validator support)
 - **Best Child Path**: Edges showing parent-child relationships in the fork tree
 - **Chain Progress**: Time series showing head, justified, and finalized slot progression
-- **Configurable**: Default shows last 50 slots (can be configured for lesser data, larger fetching would also require configuring actual zeam's api_server)
+- **Configurable**: Default shows last 50 slots
 
 **API Endpoint**: The dashboard fetches data from `/api/forkchoice/graph` endpoint on your Zeam node
 
