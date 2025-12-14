@@ -23,7 +23,7 @@ A basic Prometheus configuration is included in `prometheus/prometheus.yml` that
 **Option A: Use the included configuration (Recommended for quick start)**
 The repository includes a basic `prometheus/prometheus.yml` that will start monitoring:
 - Prometheus itself (localhost:9090)
-- A Zeam node running on the host (host.docker.internal:9667)
+- A Zeam node running on the host (host.docker.internal:9667 or localhost:8081 using [lean-quickstart](https://github.com/blockblaz/lean-quickstart))
 - Node exporter if available (host.docker.internal:9100)
 
 **Option B: Generate custom configuration (Advanced users)**
@@ -68,6 +68,24 @@ The main dashboard (`grafana/dashboards/main.json`) includes:
 - **Block Processing Rate**: Number of blocks processed per second
 - **System Health**: Overall node health indicators
 
+### Fork Choice Tree Dashboard
+
+The fork choice tree dashboard (`grafana/dashboards/forkchoice-graph.json`) provides real-time visualization of the consensus fork choice:
+
+- **Interactive Node Graph**: Visual representation of the fork choice tree showing blocks and their relationships
+- **Color-Coded Arc Borders**:
+  - 🟣 **Purple**: Finalized blocks (immutable canonical chain)
+  - 🔵 **Blue**: Justified blocks (2/3 supermajority checkpoint)
+  - 🟠 **Orange**: Current chain head
+  - 🟢 **Green**: Timely blocks (normal blocks)
+  - ⚫ **Gray**: Orphaned blocks (historical forks that diverged before finalization)
+- **Arc Border Completeness**: Represents validator weight (larger border = more validator support)
+- **Best Child Path**: Edges showing parent-child relationships in the fork tree
+- **Chain Progress**: Time series showing head, justified, and finalized slot progression
+- **Configurable**: Default shows last 50 slots
+
+**API Endpoint**: The dashboard fetches data from `/api/forkchoice/graph` endpoint on your Zeam node
+
 ## Configuration
 
 ### Environment Variables
@@ -89,7 +107,7 @@ The repository includes a basic `prometheus/prometheus.yml` configuration that w
 
 **Basic Configuration Includes:**
 - Prometheus self-monitoring (localhost:9090)
-- Zeam node monitoring (host.docker.internal:9667)
+- Zeam node monitoring (localhost:8081)
 - Node exporter monitoring (host.docker.internal:9100)
 
 **Customizing the Configuration:**
@@ -126,7 +144,7 @@ Dashboards are stored in `grafana/dashboards/` and can be:
    - Verify Zeam node is running with `--metricsPort` flag
    - Check firewall settings
    - Ensure Prometheus config targets match Zeam metrics port
-   - If your Zeam node is not on the default port 9667, edit `prometheus/prometheus.yml` and update the target
+   - If your Zeam node is not on the default port 8081, edit `prometheus/prometheus.yml` and update the target
 
 2. **Grafana can't connect to Prometheus**:
    - Verify Prometheus is running: `docker-compose ps`
