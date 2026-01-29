@@ -104,7 +104,7 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "histogram_quantile(0.95, rate(lean_state_transition_get_justification_time_seconds_bucket[5m]))",
+          "expr": "histogram_quantile(0.95, rate(lean_state_transition_get_justification_time_seconds_bucket[$__rate_interval]))",
           "legendFormat": "Get Justification (P95)",
           "range": true,
           "refId": "A"
@@ -115,7 +115,7 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "histogram_quantile(0.50, rate(lean_state_transition_get_justification_time_seconds_bucket[5m]))",
+          "expr": "histogram_quantile(0.50, rate(lean_state_transition_get_justification_time_seconds_bucket[$__rate_interval]))",
           "legendFormat": "Get Justification (P50)",
           "range": true,
           "refId": "B"
@@ -207,7 +207,7 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "rate(lean_state_transition_slots_processing_time_seconds_sum[5m]) / rate(lean_state_transition_slots_processing_time_seconds_count[5m])",
+          "expr": "rate(lean_state_transition_slots_processing_time_seconds_sum[$__rate_interval])",
           "legendFormat": "Slots Processing",
           "range": true,
           "refId": "A"
@@ -218,7 +218,7 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "rate(lean_state_transition_block_processing_time_seconds_sum[5m]) / rate(lean_state_transition_block_processing_time_seconds_count[5m])",
+          "expr": "rate(lean_state_transition_block_processing_time_seconds_sum[$__rate_interval])",
           "legendFormat": "Block Processing",
           "range": true,
           "refId": "B"
@@ -229,7 +229,7 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "rate(lean_state_transition_attestations_processing_time_seconds_sum[5m]) / rate(lean_state_transition_attestations_processing_time_seconds_count[5m])",
+          "expr": "rate(lean_state_transition_attestations_processing_time_seconds_sum[$__rate_interval])",
           "legendFormat": "Attestations Processing",
           "range": true,
           "refId": "C"
@@ -240,7 +240,7 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "rate(lean_state_transition_get_justification_time_seconds_sum[5m]) / rate(lean_state_transition_get_justification_time_seconds_count[5m])",
+          "expr": "rate(lean_state_transition_get_justification_time_seconds_sum[$__rate_interval])",
           "legendFormat": "Get Justification",
           "range": true,
           "refId": "D"
@@ -251,15 +251,15 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "rate(lean_state_transition_with_justifications_time_seconds_sum[5m]) / rate(lean_state_transition_with_justifications_time_seconds_count[5m])",
+          "expr": "rate(lean_state_transition_with_justifications_time_seconds_sum[$__rate_interval])",
           "legendFormat": "With Justifications",
           "range": true,
           "refId": "E"
         }
       ],
-      "title": "State Transition Breakdown (Stacked)",
+      "title": "State Transition Time by Phase (Stacked, per sec)",
       "type": "timeseries",
-      "description": "Breakdown of time spent in each state transition phase. Slots processing dominates due to SSZ merkleization."
+      "description": "Breakdown of total time spent per second in each phase (stacked totals)."
     },
     {
       "datasource": {
@@ -343,7 +343,7 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "rate(lean_state_transition_state_root_in_slot_time_seconds_sum[5m]) / rate(lean_state_transition_state_root_in_slot_time_seconds_count[5m])",
+          "expr": "rate(lean_state_transition_state_root_in_slot_time_seconds_sum[$__rate_interval]) / rate(lean_state_transition_state_root_in_slot_time_seconds_count[$__rate_interval])",
           "legendFormat": "State Root in Slot",
           "range": true,
           "refId": "A"
@@ -354,7 +354,7 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "rate(lean_state_transition_state_root_validation_time_seconds_sum[5m]) / rate(lean_state_transition_state_root_validation_time_seconds_count[5m])",
+          "expr": "rate(lean_state_transition_state_root_validation_time_seconds_sum[$__rate_interval]) / rate(lean_state_transition_state_root_validation_time_seconds_count[$__rate_interval])",
           "legendFormat": "State Root Validation",
           "range": true,
           "refId": "B"
@@ -365,7 +365,7 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "rate(lean_state_transition_block_header_hash_time_seconds_sum[5m]) / rate(lean_state_transition_block_header_hash_time_seconds_count[5m])",
+          "expr": "rate(lean_state_transition_block_header_hash_time_seconds_sum[$__rate_interval]) / rate(lean_state_transition_block_header_hash_time_seconds_count[$__rate_interval])",
           "legendFormat": "Block Header Hash",
           "range": true,
           "refId": "C"
@@ -435,7 +435,7 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "rate(lean_state_transition_get_justification_time_seconds_sum[5m]) / rate(lean_state_transition_get_justification_time_seconds_count[5m])",
+          "expr": "rate(lean_state_transition_get_justification_time_seconds_sum[$__rate_interval]) / rate(lean_state_transition_get_justification_time_seconds_count[$__rate_interval])",
           "legendFormat": "Avg Time",
           "range": true,
           "refId": "A"
@@ -612,7 +612,7 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "rate(lean_state_transition_slots_processed_total[5m])",
+          "expr": "rate(lean_state_transition_slots_processed_total[$__rate_interval])",
           "legendFormat": "Slots Processed/sec",
           "range": true,
           "refId": "A"
@@ -623,7 +623,7 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "rate(lean_state_transition_attestations_processed_total[5m])",
+          "expr": "rate(lean_state_transition_attestations_processed_total[$__rate_interval])",
           "legendFormat": "Attestations Processed/sec",
           "range": true,
           "refId": "B"
@@ -714,7 +714,7 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "histogram_quantile(0.99, rate(lean_state_transition_time_seconds_bucket[5m]))",
+          "expr": "histogram_quantile(0.99, rate(lean_state_transition_time_seconds_bucket[$__rate_interval]))",
           "legendFormat": "Total State Transition (P99)",
           "range": true,
           "refId": "A"
@@ -725,7 +725,7 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "histogram_quantile(0.95, rate(lean_state_transition_time_seconds_bucket[5m]))",
+          "expr": "histogram_quantile(0.95, rate(lean_state_transition_time_seconds_bucket[$__rate_interval]))",
           "legendFormat": "Total State Transition (P95)",
           "range": true,
           "refId": "B"
@@ -736,7 +736,7 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "histogram_quantile(0.50, rate(lean_state_transition_time_seconds_bucket[5m]))",
+          "expr": "histogram_quantile(0.50, rate(lean_state_transition_time_seconds_bucket[$__rate_interval]))",
           "legendFormat": "Total State Transition (P50)",
           "range": true,
           "refId": "C"
@@ -828,7 +828,7 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "rate(lean_state_transition_justifications_cache_hits_total[5m])",
+          "expr": "rate(lean_state_transition_justifications_cache_hits_total[$__rate_interval])",
           "legendFormat": "Cache Hits/sec",
           "range": true,
           "refId": "A"
@@ -839,7 +839,7 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "rate(lean_state_transition_justifications_cache_misses_total[5m])",
+          "expr": "rate(lean_state_transition_justifications_cache_misses_total[$__rate_interval])",
           "legendFormat": "Cache Misses/sec",
           "range": true,
           "refId": "B"
@@ -931,7 +931,7 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "rate(lean_state_transition_justifications_cache_hit_time_seconds_sum[5m]) / rate(lean_state_transition_justifications_cache_hit_time_seconds_count[5m])",
+          "expr": "rate(lean_state_transition_justifications_cache_hit_time_seconds_sum[$__rate_interval]) / rate(lean_state_transition_justifications_cache_hit_time_seconds_count[$__rate_interval])",
           "legendFormat": "Cache Hit Avg",
           "range": true,
           "refId": "A"
@@ -942,7 +942,7 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "rate(lean_state_transition_justifications_cache_miss_time_seconds_sum[5m]) / rate(lean_state_transition_justifications_cache_miss_time_seconds_count[5m])",
+          "expr": "rate(lean_state_transition_justifications_cache_miss_time_seconds_sum[$__rate_interval]) / rate(lean_state_transition_justifications_cache_miss_time_seconds_count[$__rate_interval])",
           "legendFormat": "Cache Miss Avg",
           "range": true,
           "refId": "B"
@@ -1034,7 +1034,7 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "(rate(lean_state_transition_justifications_cache_miss_time_seconds_sum[5m]) / rate(lean_state_transition_justifications_cache_miss_time_seconds_count[5m])) / clamp_min(rate(lean_state_transition_justifications_cache_hit_time_seconds_sum[5m]) / rate(lean_state_transition_justifications_cache_hit_time_seconds_count[5m]), 1e-9)",
+          "expr": "(rate(lean_state_transition_justifications_cache_miss_time_seconds_sum[$__rate_interval]) / rate(lean_state_transition_justifications_cache_miss_time_seconds_count[$__rate_interval])) / clamp_min(rate(lean_state_transition_justifications_cache_hit_time_seconds_sum[$__rate_interval]) / rate(lean_state_transition_justifications_cache_hit_time_seconds_count[$__rate_interval]), 1e-9)",
           "legendFormat": "Miss/Hit Avg Ratio",
           "range": true,
           "refId": "A"
@@ -1292,7 +1292,7 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "sum(rate(lean_state_transition_justifications_cache_hits_total[5m])) / clamp_min(sum(rate(lean_state_transition_justifications_cache_hits_total[5m])) + sum(rate(lean_state_transition_justifications_cache_misses_total[5m])), 1e-9)",
+          "expr": "sum(rate(lean_state_transition_justifications_cache_hits_total[$__rate_interval])) / clamp_min(sum(rate(lean_state_transition_justifications_cache_hits_total[$__rate_interval])) + sum(rate(lean_state_transition_justifications_cache_misses_total[$__rate_interval])), 1e-9)",
           "legendFormat": "Hit Ratio",
           "range": true,
           "refId": "A"
