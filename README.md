@@ -86,6 +86,65 @@ The fork choice tree dashboard (`grafana/dashboards/forkchoice-graph.json`) prov
 
 **API Endpoint**: The dashboard fetches data from `/api/forkchoice/graph` endpoint on your Zeam node
 
+#### Using Fork Choice Dashboard with Custom Grafana Instance
+
+If you have your own Grafana setup and want to import the fork choice dashboard without using the Docker Compose stack:
+
+**Prerequisites:**
+1. Install the **yesoreyeram-infinity-datasource** plugin:
+   - Official install docs (see for version-specific steps):
+     - `https://grafana.com/docs/plugins/yesoreyeram-infinity-datasource/latest/setup/installation/`
+   - Via Grafana UI:
+     - Open the menu (Grafana icon)
+     - Administration → Plugins and data → Plugins
+     - Search for "Infinity" (by Grafana Labs)
+     - Click **Infinity** → **Install**
+   - Via CLI: `grafana-cli plugins install yesoreyeram-infinity-datasource`
+
+2. Configure the Infinity data source:
+   - Go to Configuration → Data Sources → Add data source
+   - Search for "Infinity" and select it
+   - Set a name (e.g., "infinity") and save
+   - Note: No need to add a Base URL or params here; set the URL/params in the panel query.
+
+**Import the Dashboard:**
+1. Download `grafana/dashboards/forkchoice-graph.json` from this repository
+2. In Grafana: Dashboard → Import Dashboard → Upload JSON file
+3. Select your Infinity data source when prompted
+4. After import, edit the dashboard panel queries to update the API endpoint URL and split nodes/edges:
+   - Edit panel → Query tab
+   - Ensure you have **two queries** (nodes and edges). If you only see one, duplicate it.
+   - Query A (nodes):
+     - URL: `http://YOUR_ZEAM_NODE:8080/api/forkchoice/graph?slots=50`
+     - Rows/Root (Parsing options & Result fields): `nodes`
+     - Format: **Nodes – Node Graph**
+   - Query B (edges):
+     - URL: `http://YOUR_ZEAM_NODE:8080/api/forkchoice/graph?slots=50`
+     - Rows/Root (Parsing options & Result fields): `edges`
+     - Format: **Edges – Node Graph**
+   - Adjust `slots` parameter as needed (max: 200)
+
+**Data Source Configuration Details:**
+- **Type**: JSON
+- **Source**: URL
+- **Format**: Table
+- **URL**: `http://YOUR_ZEAM_NODE:8080/api/forkchoice/graph?slots=50`
+- **Method**: GET
+- **Rows/Root (Parsing options & Result fields)**:
+  - For nodes query: `nodes`
+  - For edges query: `edges`
+  - Do not leave Rows/Root empty; otherwise Grafana will treat `nodes` and `edges` as string fields in one frame and the Node Graph panel won't render.
+
+**Docker on macOS note:**
+- If Grafana runs in Docker and your Zeam node runs on the host, use `http://host.docker.internal:8080/...` in the query URL instead of `http://localhost:8080/...`.
+
+**Visualization note:**
+- The panel visualization must be set to **Node Graph**.
+
+**Node Circle Numbers Explained:**
+- **First number (mainStat)**: Validator weight/votes supporting that block
+- **Second number (secondaryStat)**: Slot number
+
 ## Configuration
 
 ### Environment Variables
