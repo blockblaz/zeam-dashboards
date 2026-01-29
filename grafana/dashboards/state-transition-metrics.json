@@ -121,9 +121,9 @@
           "refId": "B"
         }
       ],
-      "title": "Justifications Cache Performance",
+      "title": "Get Justification Time (P50/P95)",
       "type": "timeseries",
-      "description": "Cache hit = near-zero time. Cache miss = rebuilds from bitlist (~20-25μs). Should see dramatic drop after first block."
+      "description": "P50/P95 for the overall get-justification path (includes cache lookup + clone/build)."
     },
     {
       "datasource": {
@@ -373,7 +373,7 @@
       ],
       "title": "SSZ Hashing Performance",
       "type": "timeseries",
-      "description": "SSZ merkleization times. State root computation dominates (88% of state transition time)."
+      "description": "SSZ merkleization timings for state root, validation, and block header hash."
     },
     {
       "datasource": {
@@ -441,9 +441,9 @@
           "refId": "A"
         }
       ],
-      "title": "Cache Lookup Time (Avg)",
+      "title": "Get Justification Time (Avg)",
       "type": "gauge",
-      "description": "Expected: ~0-5μs with cache hits, ~20-25μs on cache miss"
+      "description": "Average for the overall get-justification path (includes cache lookup + clone/build)."
     },
     {
       "datasource": {
