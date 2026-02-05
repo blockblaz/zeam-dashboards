@@ -9,13 +9,13 @@ scrape_configs:
 
   - job_name: 'zeam_0'
     static_configs:
-      - targets: ['localhost:8081']
+      - targets: ['host.docker.internal:8081']
     scrape_interval: 5s
 
   # Additional targets for common monitoring scenarios
   - job_name: 'node_exporter'
     static_configs:
-      - targets: ['localhost:9100']
+      - targets: ['host.docker.internal:9100']
     scrape_interval: 15s
 
   # Example for external Zeam node (uncomment and modify as needed)

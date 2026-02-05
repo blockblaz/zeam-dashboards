@@ -23,8 +23,8 @@ A basic Prometheus configuration is included in `prometheus/prometheus.yml` that
 **Option A: Use the included configuration (Recommended for quick start)**
 The repository includes a basic `prometheus/prometheus.yml` that will start monitoring:
 - Prometheus itself (localhost:9090)
-- A Zeam node running on the host (host.docker.internal:9667 or localhost:8081 using [lean-quickstart](https://github.com/blockblaz/lean-quickstart))
-- Node exporter if available (host.docker.internal:9100)
+- A Zeam node running on the host (host.docker.internal:8081 using [lean-quickstart](https://github.com/blockblaz/lean-quickstart))
+- Node exporter (host.docker.internal:9100, will show as "down" if not running)
 
 **Option B: Generate custom configuration (Advanced users)**
 If you have access to the main Zeam repository, you can generate a custom configuration:
@@ -50,27 +50,19 @@ docker-compose up -d
 - **Grafana**: http://localhost:3001 (admin/admin)
 - **Prometheus**: http://localhost:9090
 
-### 4. Configure Grafana Data Source
-
-1. Open Grafana at http://localhost:3001
-2. Go to Configuration → Data Sources
-3. Add Prometheus data source:
-   - **URL**: `http://prometheus:9090`
-   - **Access**: Server (default)
+Data sources (Prometheus and Infinity) are automatically provisioned — no manual configuration needed.
 
 ## Dashboard Features
 
 ### Main Dashboard
 
-The main dashboard (`grafana/dashboards/main.json`) includes:
+The main dashboard (`grafana/dashboards/zeam_main.json`) monitors:
 
-- **P95 Block Processing Time**: 95th percentile of block processing duration
-- **Block Processing Rate**: Number of blocks processed per second
-- **System Health**: Overall node health indicators
+- **P95 Block Processing Time**: 95th percentile of block processing duration (`chain_onblock_duration_seconds`)
 
 ### Fork Choice Tree Dashboard
 
-The fork choice tree dashboard (`grafana/dashboards/forkchoice-graph.json`) provides real-time visualization of the consensus fork choice:
+The fork choice tree dashboard (`grafana/dashboards/zeam_forkchoice.json`) provides real-time visualization of the consensus fork choice:
 
 - **Interactive Node Graph**: Visual representation of the fork choice tree showing blocks and their relationships
 - **Color-Coded Arc Borders**:
@@ -82,9 +74,26 @@ The fork choice tree dashboard (`grafana/dashboards/forkchoice-graph.json`) prov
 - **Arc Border Completeness**: Represents validator weight (larger border = more validator support)
 - **Best Child Path**: Edges showing parent-child relationships in the fork tree
 - **Chain Progress**: Time series showing head, justified, and finalized slot progression
-- **Configurable**: Default shows last 50 slots
+- **Slots Parameter**: Shows last 50 slots by default (editable in the panel query URL `?slots=N`)
 
-**API Endpoint**: The dashboard fetches data from `/api/forkchoice/graph` endpoint on your Zeam node
+### State Transition & Cache Performance Dashboard
+
+The state transition dashboard (`grafana/dashboards/zeam_state_transition.json`) monitors state transition performance and justifications cache:
+
+- **Get Justification Time (P50/P95)**: Latency percentiles for the justification retrieval path
+- **State Transition Time by Phase**: Stacked breakdown of slots, blocks, attestations, justifications processing
+- **SSZ Hashing Performance**: Merkleization timings for state root, validation, and block header hash
+- **Get Justification Time (Avg)**: Gauge with green/yellow/red thresholds
+- **Chain Progress**: Current head, justified, and finalized slot numbers
+- **Processing Throughput**: Slots and attestations processed per second
+- **Overall State Transition Time**: End-to-end P50/P95/P99 latency
+- **Justifications Cache Hit/Miss Rate**: Cache throughput
+- **Justifications Cache Hit/Miss Time**: Average latency for cache hits vs misses
+- **Justifications Cache Miss/Hit Time Ratio**: Performance penalty for cache misses
+- **Justifications Cache Hit Ratio**: Hit percentage with red/yellow/green thresholds
+- **Justifications Cache Hits/Misses (Total)**: Cumulative counters since process start
+
+**API Endpoint**: The fork choice dashboard fetches data from `/api/forkchoice/graph` endpoint on your Zeam node
 
 #### Using Fork Choice Dashboard with Custom Grafana Instance
 
@@ -108,18 +117,18 @@ If you have your own Grafana setup and want to import the fork choice dashboard 
    - Note: No need to add a Base URL or params here; set the URL/params in the panel query.
 
 **Import the Dashboard:**
-1. Download `grafana/dashboards/forkchoice-graph.json` from this repository
+1. Download `grafana/dashboards/zeam_forkchoice.json` from this repository
 2. In Grafana: Dashboard → Import Dashboard → Upload JSON file
 3. Select your Infinity data source when prompted
 4. After import, edit the dashboard panel queries to update the API endpoint URL and split nodes/edges:
    - Edit panel → Query tab
    - Ensure you have **two queries** (nodes and edges). If you only see one, duplicate it.
    - Query A (nodes):
-     - URL: `http://YOUR_ZEAM_NODE:8080/api/forkchoice/graph?slots=50`
+     - URL: `http://YOUR_ZEAM_NODE:8081/api/forkchoice/graph?slots=50`
      - Rows/Root (Parsing options & Result fields): `nodes`
      - Format: **Nodes – Node Graph**
    - Query B (edges):
-     - URL: `http://YOUR_ZEAM_NODE:8080/api/forkchoice/graph?slots=50`
+     - URL: `http://YOUR_ZEAM_NODE:8081/api/forkchoice/graph?slots=50`
      - Rows/Root (Parsing options & Result fields): `edges`
      - Format: **Edges – Node Graph**
    - Adjust `slots` parameter as needed (max: 200)
@@ -128,7 +137,7 @@ If you have your own Grafana setup and want to import the fork choice dashboard 
 - **Type**: JSON
 - **Source**: URL
 - **Format**: Table
-- **URL**: `http://YOUR_ZEAM_NODE:8080/api/forkchoice/graph?slots=50`
+- **URL**: `http://YOUR_ZEAM_NODE:8081/api/forkchoice/graph?slots=50`
 - **Method**: GET
 - **Rows/Root (Parsing options & Result fields)**:
   - For nodes query: `nodes`
@@ -136,7 +145,7 @@ If you have your own Grafana setup and want to import the fork choice dashboard 
   - Do not leave Rows/Root empty; otherwise Grafana will treat `nodes` and `edges` as string fields in one frame and the Node Graph panel won't render.
 
 **Docker on macOS note:**
-- If Grafana runs in Docker and your Zeam node runs on the host, use `http://host.docker.internal:8080/...` in the query URL instead of `http://localhost:8080/...`.
+- If Grafana runs in Docker and your Zeam node runs on the host, use `http://host.docker.internal:8081/...` in the query URL instead of `http://localhost:8081/...`.
 
 **Visualization note:**
 - The panel visualization must be set to **Node Graph**.
@@ -147,27 +156,14 @@ If you have your own Grafana setup and want to import the fork choice dashboard 
 
 ## Configuration
 
-### Environment Variables
-
-You can customize the setup using environment variables:
-
-```bash
-# Custom ports
-export PROMETHEUS_PORT=9090
-export GRAFANA_PORT=3001
-
-# Start with custom configuration
-docker-compose up -d
-```
-
 ### Prometheus Configuration
 
 The repository includes a basic `prometheus/prometheus.yml` configuration that works out of the box. You can customize it for your specific setup:
 
 **Basic Configuration Includes:**
 - Prometheus self-monitoring (localhost:9090)
-- Zeam node monitoring (localhost:8081)
-- Node exporter monitoring (host.docker.internal:9100)
+- Zeam node monitoring (host.docker.internal:8081)
+- Node exporter (host.docker.internal:9100)
 
 **Customizing the Configuration:**
 - Edit `prometheus/prometheus.yml` to add your specific targets
@@ -182,18 +178,94 @@ If you have access to the main Zeam repository, you can generate a custom config
 
 ## Development
 
+### Prerequisites
+
+- Node.js (for dashboard scripts)
+
+```bash
+npm install
+```
+
+### Editing Dashboards
+
+To edit or extend an existing Grafana dashboard with minimal diff:
+
+1. Grab the `.json` dashboard file from the current branch
+2. Import the file to Grafana via the web UI at `/dashboard/import` (keep the same UID)
+3. Visually edit the dashboard in the Grafana UI
+4. Once done, make sure to leave the exact same visual aspect as before: same refresh interval, time range, etc.
+5. Save the dashboard (CTRL+S)
+6. Run `npm run download` (see below)
+7. Check `git diff` of updated dashboards, commit, push and open your PR
+
+### Using the Download Script
+
+1. Generate a Grafana API token:
+   - Open Grafana → Administration → Service accounts
+   - Create a new service account with **Editor** role
+   - Generate a token and copy it
+
+2. Create a file `.secrets.env` in the project root:
+
+```bash
+GRAFANA_API_KEY=your_token_here
+GRAFANA_URL=http://localhost:3001
+```
+
+3. Run the download script:
+
+```bash
+npm run download
+```
+
+The script will:
+- Fetch all dashboards with `zeam_` UID prefix from the Grafana API
+- Only update dashboards that already exist locally (ignores test duplicates)
+- Run each dashboard through the lint/normalize pipeline
+- Write deterministic JSON output (`JSON.stringify` with 2-space indent)
+- Preserve the version number to minimize diff noise
+
+### Linting Dashboards
+
+Lint all dashboards in place (normalizes formatting, datasource UIDs, tags, timezone, etc.):
+
+```bash
+npm run lint-dashboards
+```
+
+### Validating Dashboards (CI)
+
+Checks that all dashboards are properly linted — fails if any changes are needed:
+
+```bash
+npm run validate-dashboards
+```
+
 ### Adding New Dashboards
 
-1. Create dashboard JSON in `grafana/dashboards/`
-2. Update `grafana/provisioning/dashboards/dashboards.yml` if needed
-3. Restart Grafana: `docker-compose restart grafana`
+1. Create the dashboard in the Grafana UI
+2. Before saving, set the dashboard UID to start with `zeam_` (e.g., `zeam_networking`):
+   - Dashboard Settings (gear icon) → JSON Model → change the `uid` field
+3. Save the dashboard in Grafana (CTRL+S)
+4. Create a local placeholder file so the download script picks it up:
+   ```bash
+   echo '{}' > grafana/dashboards/zeam_networking.json
+   ```
+5. Run the download script to fetch and lint:
+   ```bash
+   npm run download
+   ```
+6. Verify with `git diff`, commit and open a PR
 
-### Customizing Dashboards
+### Dashboard UID Convention
 
-Dashboards are stored in `grafana/dashboards/` and can be:
-- Modified directly in JSON format
-- Exported from Grafana UI
-- Version controlled with Git
+All dashboard UIDs must start with `zeam_` and files must be named `{uid}.json`:
+
+| Dashboard | UID | File |
+|-----------|-----|------|
+| Main | `zeam_main` | `grafana/dashboards/zeam_main.json` |
+| Fork Choice | `zeam_forkchoice` | `grafana/dashboards/zeam_forkchoice.json` |
+| State Transition | `zeam_state_transition` | `grafana/dashboards/zeam_state_transition.json` |
 
 ## Troubleshooting
 
