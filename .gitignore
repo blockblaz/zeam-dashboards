@@ -7,6 +7,10 @@ grafana-storage/
 # Environment files
 .env
 .env.local
+.secrets.env
+
+# Node
+node_modules/
 
 # OS generated files
 .DS_Store
